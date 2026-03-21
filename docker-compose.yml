@@ -1,0 +1,102 @@
+services:
+  # ==================== MONGODB ====================
+  mongodb:
+    image: mongo:6.0
+    container_name: uni-social-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-changeme}
+      MONGO_INITDB_DATABASE: uni_social_db
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - backend
+    # Security: Don't expose MongoDB port externally in production
+    # ports:
+    #   - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    # Security: Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ==================== SERVER (API) ====================
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: uni-social-server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      # Use MONGO_URL from .env if set (for Atlas), otherwise use local container
+      MONGO_URL: ${MONGO_URL:-mongodb://${MONGO_USERNAME:-appuser}:${MONGO_PASSWORD:-apppassword}@mongodb:27017/uni_social_db?authSource=uni_social_db}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
+    ports:
+      - "3001:3001"
+    volumes:
+      - server_uploads:/app/public/assets
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ==================== CLIENT (React App) ====================
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-http://localhost:3001}
+    container_name: uni-social-client
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# ==================== NETWORKS ====================
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true  # Security: Backend network is internal only
+
+# ==================== VOLUMES ====================
+volumes:
+  mongodb_data:
+    driver: local
+  server_uploads:
+    driver: local

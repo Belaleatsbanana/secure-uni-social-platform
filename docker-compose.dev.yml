@@ -1,0 +1,48 @@
+version: '3.8'
+
+# Development override - extends docker-compose.yml
+services:
+  mongodb:
+    ports:
+      - "27017:27017"  # Expose MongoDB for development
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      MONGO_URL: mongodb://appuser:apppassword@mongodb:27017/uni_social_db?authSource=uni_social_db
+      JWT_SECRET: dev-secret-key-not-for-production
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+      - server_uploads:/app/public/assets
+    # Disable security restrictions for dev
+    read_only: false
+    cap_drop: []
+    security_opt: []
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:3001
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    # Disable security restrictions for dev
+    read_only: false
+    cap_drop: []
+    security_opt: []
+
+volumes:
+  mongodb_data:
+  server_uploads:

@@ -5,17 +5,24 @@ export const verifyToken = async (req, res, next) => {
     let token = req.header("Authorization");
 
     if (!token) {
-      return res.status(403).send("Access Denied");
+      return res.status(401).json({ error: "Access denied. No token provided." });
     }
 
     if (token.startsWith("Bearer ")) {
-      token = token.slice(7, token.length).trimLeft();
+      token = token.slice(7).trimStart();
     }
 
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
     next();
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: "Token expired. Please login again." });
+    }
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: "Invalid token." });
+    }
+    console.error("Token verification error:", err.message);
+    res.status(500).json({ error: "Authentication failed" });
   }
 };

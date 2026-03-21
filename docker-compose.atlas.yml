@@ -1,0 +1,60 @@
+# Docker Compose for MongoDB Atlas (cloud database)
+# Usage: docker-compose -f docker-compose.atlas.yml up -d
+#
+# Before running, set MONGO_URL in your .env file:
+# MONGO_URL=mongodb+srv://username:password@cluster.xxxxx.mongodb.net/uni_social_db?retryWrites=true&w=majority
+
+services:
+  # ==================== SERVER (API) ====================
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: uni-social-server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGO_URL: ${MONGO_URL:?MONGO_URL is required - set your MongoDB Atlas connection string in .env}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server/public/assets:/app/public/assets
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ==================== CLIENT (React App) ====================
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL:-http://localhost:3001}
+    container_name: uni-social-client
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# ==================== NETWORKS ====================
+networks:
+  app-network:
+    driver: bridge
