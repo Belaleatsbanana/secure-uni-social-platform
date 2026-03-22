@@ -6,15 +6,16 @@ import {
   DeleteOutlined,
   EditOutlined,
   SendOutlined,
+  CloseOutlined,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme, InputBase } from "@mui/material";
+import { Box, Divider, IconButton, Typography, useTheme, InputBase, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
 import UserImage from "components/UserImage";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPost, setLogout } from "state";
+import { setPost, setLogout, deletePost } from "state";
 
 const PostWidget = ({
   postId,
@@ -29,6 +30,9 @@ const PostWidget = ({
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState(description);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user?._id);
@@ -101,6 +105,49 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  const handleEditPost = async () => {
+    if (!editedDescription.trim()) return;
+
+    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ description: editedDescription }),
+    });
+
+    if (response.status === 401) {
+      dispatch(setLogout());
+      return;
+    }
+
+    if (response.ok) {
+      const updatedPost = await response.json();
+      dispatch(setPost({ post: updatedPost }));
+      setIsEditing(false);
+    }
+  };
+
+  const handleDeletePost = async () => {
+    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      dispatch(setLogout());
+      return;
+    }
+
+    if (response.ok) {
+      dispatch(deletePost({ postId }));
+      setDeleteDialogOpen(false);
+    }
+  };
+
   return (
     <WidgetWrapper m="2rem 0">
       <FlexBetween>
@@ -113,19 +160,57 @@ const PostWidget = ({
 
         {isOwnPost && (
           <FlexBetween gap="0.25rem">
-            <IconButton size="small">
-              <EditOutlined sx={{ color: medium }} />
+            <IconButton size="small" onClick={() => setIsEditing(!isEditing)}>
+              {isEditing ? (
+                <CloseOutlined sx={{ color: medium }} />
+              ) : (
+                <EditOutlined sx={{ color: medium }} />
+              )}
             </IconButton>
-            <IconButton size="small">
+            <IconButton size="small" onClick={() => setDeleteDialogOpen(true)}>
               <DeleteOutlined sx={{ color: medium }} />
             </IconButton>
           </FlexBetween>
         )}
       </FlexBetween>
 
-      <Typography color={main} sx={{ mt: "1rem" }}>
-        {description}
-      </Typography>
+      {isEditing ? (
+        <Box sx={{ mt: "1rem" }}>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            variant="outlined"
+            size="small"
+          />
+          <Box sx={{ display: "flex", gap: "0.5rem", mt: "0.5rem", justifyContent: "flex-end" }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => {
+                setIsEditing(false);
+                setEditedDescription(description);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleEditPost}
+              disabled={!editedDescription.trim()}
+            >
+              Save
+            </Button>
+          </Box>
+        </Box>
+      ) : (
+        <Typography color={main} sx={{ mt: "1rem" }}>
+          {description}
+        </Typography>
+      )}
 
       {picturePath && (
         <img
@@ -216,6 +301,20 @@ const PostWidget = ({
           <Divider />
         </Box>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete Post</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this post? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeletePost} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </WidgetWrapper>
   );
 };

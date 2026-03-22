@@ -194,3 +194,55 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ error: "Failed to delete comment" });
   }
 };
+
+/* UPDATE POST */
+export const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { description } = req.body;
+    const userId = req.user.id;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    // Only post author can edit
+    if (post.userId !== userId) {
+      return res.status(403).json({ error: "Not authorized to edit this post" });
+    }
+
+    post.description = description;
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error("Update post error:", err.message);
+    res.status(500).json({ error: "Failed to update post" });
+  }
+};
+
+/* DELETE POST */
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    // Only post author can delete
+    if (post.userId !== userId) {
+      return res.status(403).json({ error: "Not authorized to delete this post" });
+    }
+
+    await Post.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Post deleted successfully", postId: id });
+  } catch (err) {
+    console.error("Delete post error:", err.message);
+    res.status(500).json({ error: "Failed to delete post" });
+  }
+};
