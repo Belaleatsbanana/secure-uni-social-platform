@@ -18,19 +18,24 @@ const HomePage = () => {
         width="100%"
         padding="2rem 6%"
         display={isNonMobileScreens ? "flex" : "block"}
-        gap="0.5rem"
+        gap="1.5rem" // ✅ increased spacing
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
           <UserWidget userId={_id} picturePath={picturePath} />
         </Box>
+
         <Box
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
+          display="flex" // ✅ new
+          flexDirection="column" // ✅ new
+          gap="1.5rem" // ✅ spacing between widgets
         >
           <MyPostWidget picturePath={picturePath} />
           <PostsWidget userId={_id} />
         </Box>
+
         {isNonMobileScreens && (
           <Box flexBasis="26%">
             <AdvertWidget />

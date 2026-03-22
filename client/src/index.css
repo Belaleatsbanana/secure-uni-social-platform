@@ -4,7 +4,81 @@ html,
 body,
 #root,
 .app {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
+  margin: 0;
   font-family: "Rubik", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #4a90e2, #4caf50);
+  background-attachment: fixed;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  box-sizing: border-box;
+}
+
+.auth-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.auth-card input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.auth-card button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4a90e2, #4caf50);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.logo {
+  width: 80px;
+  height: auto;
+  display: block;
+  margin: 0 auto 20px;
 }

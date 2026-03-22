@@ -14,6 +14,7 @@ import hpp from "hpp";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
+import messageRoutes from "./routes/messages.js";
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
@@ -138,6 +139,7 @@ app.get("/health", (req, res) => {
 app.use("/auth", loginLimiter, authRoutes);
 app.use("/users", authLimiter, userRoutes);
 app.use("/posts", authLimiter, postRoutes);
+app.use("/messages", authLimiter, messageRoutes);
 
 /* ERROR HANDLING MIDDLEWARE */
 app.use((err, req, res, next) => {

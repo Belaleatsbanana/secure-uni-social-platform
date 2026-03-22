@@ -43,8 +43,9 @@ COPY --from=builder --chown=nodejs:nodejs /app/models ./models
 COPY --from=builder --chown=nodejs:nodejs /app/routes ./routes
 COPY --from=builder --chown=nodejs:nodejs /app/data ./data
 
-# Create public/assets directory with proper permissions
+# Create public/assets directory and copy initial assets
 RUN mkdir -p public/assets && chown -R nodejs:nodejs public
+COPY --from=builder --chown=nodejs:nodejs /app/public/assets ./public/assets
 
 # Security: Set environment variables
 ENV NODE_ENV=production

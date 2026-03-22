@@ -113,3 +113,84 @@ export const likePost = async (req, res) => {
     res.status(500).json({ error: "Failed to update post" });
   }
 };
+
+/* ADD COMMENT */
+export const addComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId, comment } = req.body;
+
+    // Authorization check
+    if (req.user.id !== userId) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    if (!comment || comment.trim().length === 0) {
+      return res.status(400).json({ error: "Comment is required" });
+    }
+
+    if (comment.length > 1000) {
+      return res.status(400).json({ error: "Comment too long (max 1000 characters)" });
+    }
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const newComment = {
+      _id: new Date().getTime().toString() + Math.random().toString(36).substr(2, 9),
+      userId,
+      userName: `${user.firstName} ${user.lastName}`,
+      userPicturePath: user.picturePath,
+      text: comment.trim(),
+      createdAt: new Date(),
+    };
+
+    post.comments.push(newComment);
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error("Add comment error:", err.message);
+    res.status(500).json({ error: "Failed to add comment" });
+  }
+};
+
+/* DELETE COMMENT */
+export const deleteComment = async (req, res) => {
+  try {
+    const { id, commentId } = req.params;
+    const userId = req.user.id;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const commentIndex = post.comments.findIndex((c) => c._id === commentId);
+    if (commentIndex === -1) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    const comment = post.comments[commentIndex];
+    
+    // Only comment author or post author can delete
+    if (comment.userId !== userId && post.userId !== userId) {
+      return res.status(403).json({ error: "Not authorized to delete this comment" });
+    }
+
+    post.comments.splice(commentIndex, 1);
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (err) {
+    console.error("Delete comment error:", err.message);
+    res.status(500).json({ error: "Failed to delete comment" });
+  }
+};

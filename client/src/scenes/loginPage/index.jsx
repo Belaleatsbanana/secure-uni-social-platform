@@ -10,11 +10,17 @@ const LoginPage = () => {
         width="100%"
         backgroundColor={theme.palette.background.alt}
         p="1rem 6%"
-        textAlign="center"
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
       >
-        <Typography fontWeight="bold" fontSize="32px" color="primary">
-          Sociopedia
-        </Typography>
+        <Box display="flex" alignItems="center" gap="0.75rem">
+          <img
+            src="/logo.jpeg"
+            alt="logo"
+            style={{ width: "150px", height: "150px", borderRadius: "8px" }}
+          />
+          <Typography fontWeight="bold" fontSize="32px">    <span style={{ color: "#1F4E79" }}>Safe</span>    <span style={{ color: "#3FA34D" }}>Campus</span>  </Typography></Box>
       </Box>
 
       <Box
@@ -25,7 +31,7 @@ const LoginPage = () => {
         backgroundColor={theme.palette.background.alt}
       >
         <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-          Welcome to Socipedia, the Social Media for Sociopaths!
+          Welcome to SafeCampus, your secure social network for university life.
         </Typography>
         <Form />
       </Box>

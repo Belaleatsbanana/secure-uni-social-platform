@@ -37,7 +37,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   };
 
   return (
-    <FlexBetween>
+    <FlexBetween width="100%">
       <FlexBetween gap="1rem">
         <UserImage image={userPicturePath} size="55px" />
         <Box
@@ -66,7 +66,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
       </FlexBetween>
       <IconButton
         onClick={() => patchFriend()}
-        sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+        sx={{ backgroundColor: primaryLight, p: "0.6rem", ml: "auto" }}
       >
         {isFriend ? (
           <PersonRemoveOutlined sx={{ color: primaryDark }} />

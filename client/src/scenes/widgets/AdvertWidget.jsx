@@ -1,6 +1,7 @@
 import { Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
+import { useSelector } from "react-redux";
 
 const AdvertWidget = () => {
   const { palette } = useTheme();
@@ -8,14 +9,30 @@ const AdvertWidget = () => {
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
 
+  // ✅ get user from redux
+  const user = useSelector((state) => state.user);
+
+  // ✅ check role (you can change "admin" if needed)
+  const isAdmin = user?.role === "admin";
+
   return (
     <WidgetWrapper>
       <FlexBetween>
         <Typography color={dark} variant="h5" fontWeight="500">
           Sponsored
         </Typography>
-        <Typography color={medium}>Create Ad</Typography>
+
+        {/* ✅ only admin sees this */}
+        {isAdmin && (
+          <Typography
+            color={medium}
+            sx={{ cursor: "pointer", fontWeight: "500" }}
+          >
+            Create Ad
+          </Typography>
+        )}
       </FlexBetween>
+
       <img
         width="100%"
         height="auto"
@@ -23,10 +40,12 @@ const AdvertWidget = () => {
         src="http://localhost:3001/assets/info4.jpeg"
         style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
       />
+
       <FlexBetween>
         <Typography color={main}>MikaCosmetics</Typography>
         <Typography color={medium}>mikacosmetics.com</Typography>
       </FlexBetween>
+
       <Typography color={medium} m="0.5rem 0">
         Your pathway to stunning and immaculate beauty and made sure your skin
         is exfoliating skin and shining like light.
