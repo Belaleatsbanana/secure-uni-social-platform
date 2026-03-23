@@ -38,7 +38,7 @@ export const getConversations = async (req, res) => {
     const conversationUserIds = messages.map((m) => m._id);
     const users = await User.find({ _id: { $in: conversationUserIds } })
       .select("firstName lastName picturePath")
-      .lean();
+      .lean(); // Use lean() for faster queries since we only need plain JS objects
 
     const conversations = messages.map((msg) => {
       const user = users.find((u) => u._id.toString() === msg._id.toString());

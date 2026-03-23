@@ -1,5 +1,12 @@
 import jwt from "jsonwebtoken";
 
+/*
+  Middleware to verify JWT tokens for protected routes. 
+  It checks for the presence of the token in the Authorization header, 
+  verifies it using the secret key, and attaches the decoded user information to the request object. 
+  If the token is missing, invalid, or expired, it responds with appropriate error messages.
+*/
+
 export const verifyToken = async (req, res, next) => {
   try {
     let token = req.header("Authorization");

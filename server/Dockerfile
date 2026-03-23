@@ -1,4 +1,4 @@
-# ==================== BUILD STAGE ====================
+# BUILD STAGE
 FROM node:20-alpine AS builder
 
 # Set working directory
@@ -14,7 +14,7 @@ RUN npm ci --legacy-peer-deps --only=production && \
 # Copy application code
 COPY . .
 
-# ==================== PRODUCTION STAGE ====================
+# PRODUCTION STAGE
 FROM node:20-alpine AS production
 
 # Security labels

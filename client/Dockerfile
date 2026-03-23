@@ -1,4 +1,4 @@
-# ==================== BUILD STAGE ====================
+# BUILD STAGE
 FROM node:20-alpine AS builder
 
 # Set working directory
@@ -20,7 +20,7 @@ ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
 # Build the application
 RUN npm run build
 
-# ==================== PRODUCTION STAGE ====================
+# PRODUCTION STAGE
 FROM node:20-alpine AS production
 
 # Security labels

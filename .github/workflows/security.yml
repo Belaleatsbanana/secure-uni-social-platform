@@ -10,7 +10,7 @@ on:
     - cron: '0 9 * * 1'
 
 jobs:
-  # ==================== DEPENDENCY SCANNING ====================
+  # DEPENDENCY SCANNING
   dependency-scan:
     name: Dependency Vulnerability Scan
     runs-on: ubuntu-latest
@@ -32,6 +32,7 @@ jobs:
         working-directory: ./client
         run: npm install --legacy-peer-deps
 
+      # snyk is a tool for scanning Node.js projects for known vulnerabilities in dependencies.
       - name: Run Snyk to check for vulnerabilities (Server)
         uses: snyk/actions/node@master
         continue-on-error: true
@@ -48,7 +49,8 @@ jobs:
         with:
           args: --severity-threshold=high --file=client/package.json
 
-  # ==================== LICENSE COMPLIANCE ====================
+  # LICENSE COMPLIANCE
+  # This job checks the licenses of all dependencies used in the server and client to ensure they comply with the project's licensing requirements.
   license-check:
     name: License Compliance Check
     runs-on: ubuntu-latest
@@ -79,7 +81,9 @@ jobs:
           license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;CC0-1.0;Unlicense;0BSD;CC-BY-4.0;Python-2.0;BlueOak-1.0.0' --excludePrivatePackages || true
         continue-on-error: true
 
-  # ==================== SECRET SCANNING ====================
+  # SECRET SCANNING
+  # This job uses TruffleHog and GitLeaks to scan the codebase 
+  # for any hardcoded secrets or sensitive information that may have been accidentally committed.
   secret-scan:
     name: Secret Detection
     runs-on: ubuntu-latest
@@ -102,7 +106,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # ==================== SAST (Static Application Security Testing) ====================
+  # SAST (Static Application Security Testing)
+  # This job uses CodeQL to perform static code analysis on the server and client codebases
+  # to identify potential security vulnerabilities, code quality issues
+  # , and other bugs that could lead to security risks.
   sast-scan:
     name: Static Code Analysis
     runs-on: ubuntu-latest
@@ -121,7 +128,9 @@ jobs:
         with:
           category: "/language:javascript"
 
-  # ==================== DOCKER IMAGE SCANNING ====================
+  # DOCKER IMAGE SCANNING
+  # This job builds Docker images for both the server and client, 
+  # then uses Trivy to scan the images for vulnerabilities in the base image and application dependencies.
   container-scan:
     name: Container Security Scan
     runs-on: ubuntu-latest
