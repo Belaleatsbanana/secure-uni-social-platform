@@ -41,12 +41,15 @@ export const register = async (req, res) => {
     const salt = await bcrypt.genSalt(12); // Increased salt rounds
     const passwordHash = await bcrypt.hash(password, salt);
 
+    // If file uploaded by multer, use its filename as picturePath
+    const uploadedPicture = req.file ? req.file.filename : null;
+
     const newUser = new User({
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: email.toLowerCase().trim(),
       password: passwordHash,
-      picturePath,
+      picturePath: uploadedPicture || picturePath,
       friends: friends || [],
       location: location?.trim(),
       occupation: occupation?.trim(),

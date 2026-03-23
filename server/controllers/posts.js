@@ -25,6 +25,9 @@ export const createPost = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // If a picture was uploaded via multer, use its filename
+    const uploadedPicture = req.file ? req.file.filename : null;
+
     const newPost = new Post({
       userId,
       firstName: user.firstName,
@@ -32,7 +35,7 @@ export const createPost = async (req, res) => {
       location: user.location,
       description: description.trim(),
       userPicturePath: user.picturePath,
-      picturePath,
+      picturePath: uploadedPicture || picturePath,
       likes: {},
       comments: [],
     });
