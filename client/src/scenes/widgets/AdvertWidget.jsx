@@ -2,6 +2,7 @@ import { Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 import { useSelector } from "react-redux";
+import { API_BASE_URL } from "config/api";
 
 const AdvertWidget = () => {
   const { palette } = useTheme();
@@ -37,7 +38,7 @@ const AdvertWidget = () => {
         width="100%"
         height="auto"
         alt="advert"
-        src="http://localhost:3001/assets/info4.jpeg"
+        src={`${API_BASE_URL}/assets/info4.jpeg`}
         style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
       />
 

@@ -16,6 +16,7 @@ import { Close, SendOutlined, ArrowBack } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
+import { API_BASE_URL } from "config/api";
 
 const ChatWidget = ({ open, onClose, initialFriendId = null }) => {
   const [selectedFriend, setSelectedFriend] = useState(null);
@@ -36,7 +37,7 @@ const ChatWidget = ({ open, onClose, initialFriendId = null }) => {
   // Fetch messages with a friend
   const fetchMessages = useCallback(async (friendId) => {
     try {
-      const response = await fetch(`http://localhost:3001/messages/${friendId}`, {
+      const response = await fetch(`${API_BASE_URL}/messages/${friendId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.ok) {
@@ -53,7 +54,7 @@ const ChatWidget = ({ open, onClose, initialFriendId = null }) => {
     if (!newMessage.trim() || !selectedFriend) return;
     
     try {
-      const response = await fetch("http://localhost:3001/messages", {
+      const response = await fetch(`${API_BASE_URL}/messages`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

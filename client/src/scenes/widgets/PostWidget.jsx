@@ -16,6 +16,7 @@ import UserImage from "components/UserImage";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost, setLogout, deletePost } from "state";
+import { API_BASE_URL } from "config/api";
 
 const PostWidget = ({
   postId,
@@ -48,7 +49,7 @@ const PostWidget = ({
   const neutralLight = palette.neutral.light;
 
   const patchLike = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}/like`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -69,7 +70,7 @@ const PostWidget = ({
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
-    const response = await fetch(`http://localhost:3001/posts/${postId}/comment`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/comment`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,7 +90,7 @@ const PostWidget = ({
   };
 
   const handleDeleteComment = async (commentId) => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}/comment/${commentId}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}/comment/${commentId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -108,7 +109,7 @@ const PostWidget = ({
   const handleEditPost = async () => {
     if (!editedDescription.trim()) return;
 
-    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -130,7 +131,7 @@ const PostWidget = ({
   };
 
   const handleDeletePost = async () => {
-    const response = await fetch(`http://localhost:3001/posts/${postId}`, {
+    const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -218,7 +219,7 @@ const PostWidget = ({
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`http://localhost:3001/assets/${picturePath}`}
+          src={`${API_BASE_URL}/assets/${picturePath}`}
         />
       )}
 
