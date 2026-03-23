@@ -1,16 +1,16 @@
-import express from "express";
-import bodyParser from "body-parser";
-import mongoose from "mongoose";
-import cors from "cors";
-import dotenv from "dotenv";
-import multer from "multer";
-import helmet from "helmet";
-import morgan from "morgan";
-import path from "path";
-import { fileURLToPath } from "url";
-import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
-import hpp from "hpp";
+import express from "express"; // Express framework for building the server
+import bodyParser from "body-parser"; // Middleware for parsing request bodies
+import mongoose from "mongoose"; // Mongoose for MongoDB object modeling
+import cors from "cors"; // Middleware for enabling CORS (Cross-Origin Resource Sharing)
+import dotenv from "dotenv"; // Load environment variables from .env file
+import multer from "multer"; // uploading files
+import helmet from "helmet"; // security middleware against common vulnerabilities
+import morgan from "morgan"; // HTTP request logger middleware
+import path from "path"; // Node.js module for handling file paths
+import { fileURLToPath } from "url"; // Utility to get the filename and directory name in ES modules
+import rateLimit from "express-rate-limit"; // prevent brute-force attacks and abuse
+import mongoSanitize from "express-mongo-sanitize"; // sanitize user input to prevent NoSQL injection attacks
+import hpp from "hpp"; // prevent HTTP Parameter Pollution attacks where attackers can send multiple parameters with the same name to manipulate server behavior
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
@@ -26,7 +26,7 @@ import { users, posts } from "./data/index.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-const app = express();
+const app = express(); 
 
 /* SECURITY MIDDLEWARE */
 // Rate limiting - prevent brute force attacks
