@@ -2,6 +2,15 @@
 
 This guide explains how to deploy the secure-uni-social-platform on DigitalOcean using the pre-built Docker images from GitHub Container Registry.
 
+## ⚠️ CRITICAL: Port Configuration
+
+| App | HTTP Port |
+|-----|-----------|
+| **Server** | `3001` |
+| **Client** | `3000` |
+
+DigitalOcean defaults to port 8080 - **you must change this!**
+
 ## Prerequisites
 
 - GitHub repository with packages published at:

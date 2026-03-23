@@ -14,7 +14,7 @@ services:
       # MongoDB Atlas connection string (required in .env)
       MONGO_URL: ${MONGO_URL:?MONGO_URL is required - set your MongoDB Atlas connection string in .env}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost,https://susi-iocpt.ondigitalocean.app,https://lionfish-app-hgryb.ondigitalocean.app}
     ports:
       - "3001:3001"
     volumes:
