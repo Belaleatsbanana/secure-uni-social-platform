@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps && npm cache clean --force
 # Copy application code
 COPY . .
 
-# Build arguments for environment
+# Build arguments for environment 
 ARG REACT_APP_API_BASE_URL=http://localhost:3001
 ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
 
